@@ -5,8 +5,8 @@ from tweepy import OAuthHandler
 from tweepy import Stream
 
 import twitter_credentials
-# import numpy as np
-# import pandas as pd
+import numpy as np
+import pandas as pd
 
 
  ### TWITTER CLINET ###
@@ -88,11 +88,31 @@ class TweetAnalyzer():
     """
         functionality for analyzing content from tweets.
     """
+    def tweets_to_data_frame(self, tweets):
+        df = pd.DataFrame(data=[tweet.text for tweet in tweets], columns=['Tweets'])
+        df['id'] = np.array([tweet.id for tweet in tweets])
+        df['len'] = np.array([len(tweet.text) for tweet in tweets])
+        df['date'] = np.array([tweet.created_at for tweet in tweets])
+        df['source'] = np.array([tweet.source for tweet in tweets])
+        df['likes'] = np.array([tweet.favorite_count for tweet in tweets])
+        df['retweets'] = np.array([tweet.retweet_count for tweet in tweets])
+
+        return df
+
 
 
 if __name__ == "__main__":
     
     twitter_client = TwitterClient()
+    tweet_analyzer = TweetAnalyzer()
+
     api = twitter_client.get_twitter_client_api()
+
     tweets = api.user_timeline(screen_name="AnushkaSharma", count=10)
-    print(tweets)
+
+    df = tweet_analyzer.tweets_to_data_frame(tweets)
+    print(df.head(10))
+
+    #extract fields for each tweet
+    #print(dir(tweets[0]))
+    #print(tweets[0].retweet_count)
