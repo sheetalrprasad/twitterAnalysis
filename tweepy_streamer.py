@@ -92,19 +92,7 @@ class TweetAnalyzer():
 
 if __name__ == "__main__":
     
-    # twitter_client = TwitterClient()
-    # api = twitter_client.get_twitter_client_api()
-    # tweets = api.user_timeline(screen_name="AnushkaSharma", count=10)
-    # print(tweets) 
-
-
-
-    hash_tags_list = ['covid-19','work from home stress','online therapy','sucide']
-    fetched_tweets_file = "tweets.json"
-    
-    # twitterStreamer = TwitterStreamer()
-    # twitterStreamer.stream_tweet(fetched_tweets_file,hash_tags_list)
-
-    twitter_client = TwitterClient("@AnushkaSharma")
-    #print(twitter_client.get_user_timeline_tweets(1))
-    print(twitter_client.get_home_timeline_tweets(1))
+    twitter_client = TwitterClient()
+    api = twitter_client.get_twitter_client_api()
+    tweets = api.user_timeline(screen_name="AnushkaSharma", count=10)
+    print(tweets)
