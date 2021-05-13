@@ -5,6 +5,39 @@ from tweepy import OAuthHandler
 from tweepy import Stream
 
 import twitter_credentials
+# import numpy as np
+# import pandas as pd
+
+
+ ### TWITTER CLINET ###
+class TwitterClient():
+
+    def __init__(self, twitter_user=None):
+        self.auth = TwitterAuthenticator().authenticate_twitter_app()
+        self.twitter_client = API(self.auth)
+        self.twitter_user = twitter_user
+
+    def get_twitter_client_api(self):
+        return self.twitter_client
+
+    def get_user_timeline_tweets(self,num_tweets):
+        tweets = []
+        #no user set - none, self timeline
+        for tweet in Cursor(self.twitter_client.user_timeline, id=self.twitter_user).items(num_tweets):
+            tweets.append(tweet)
+        return tweets
+
+    def get_friend_list(self, num_friends):
+        friends_list = []
+        for friend in Cursor(self.twitter_client.friends).items(num_friends):
+            friends_list.append(friend)
+        return friends_list
+    
+    def get_home_timeline_tweets(self, num_tweets):
+        home_tweets = []
+        for tweet in Cursor(self.twitter_client.home_timeline).items(num_tweets):
+            home_tweets.append(tweet)
+        return home_tweets
 
 class TwitterAuthenticator():
 
@@ -51,9 +84,27 @@ class TwitterListener(StreamListener):
         print(status)
         
 
+class TweetAnalyzer():
+    """
+        functionality for analyzing content from tweets.
+    """
+
+
 if __name__ == "__main__":
+    
+    # twitter_client = TwitterClient()
+    # api = twitter_client.get_twitter_client_api()
+    # tweets = api.user_timeline(screen_name="AnushkaSharma", count=10)
+    # print(tweets) 
+
+
+
     hash_tags_list = ['covid-19','work from home stress','online therapy','sucide']
     fetched_tweets_file = "tweets.json"
-    twitterStreamer = TwitterStreamer()
-    twitterStreamer.stream_tweet(fetched_tweets_file,hash_tags_list)
     
+    # twitterStreamer = TwitterStreamer()
+    # twitterStreamer.stream_tweet(fetched_tweets_file,hash_tags_list)
+
+    twitter_client = TwitterClient("@AnushkaSharma")
+    #print(twitter_client.get_user_timeline_tweets(1))
+    print(twitter_client.get_home_timeline_tweets(1))
