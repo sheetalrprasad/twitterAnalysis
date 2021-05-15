@@ -7,7 +7,8 @@ from tweepy import Stream
 import twitter_credentials
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
+import re
+from textblob import TextBlob
 
 
  ### TWITTER CLINET ###
@@ -89,8 +90,23 @@ class TweetAnalyzer():
     """
         functionality for analyzing content from tweets.
     """
+
+    def clean_tweet(self, tweet):
+        #remove special characters and hyperlink
+        return ' '.join(re.sub("(@[A-Za-z0-9]+) | ([^0-9A-Za-z \t]) | (\w+:\/\/\S+)"," ", tweet).split())
+    
+    def analyze_sentiment(self, tweet):
+        analysis = TextBlob(self.clean_tweet(tweet))
+        
+        if analysis.sentiment.polarity > 0:
+            return 1
+        elif analysis.sentiment.polarity == 0:
+            return 0
+        else:
+            return -1
+
     def tweets_to_data_frame(self, tweets):
-        df = pd.DataFrame(data=[tweet.text for tweet in tweets], columns=['Tweets'])
+        df = pd.DataFrame(data=[tweet.text for tweet in tweets], columns=['tweets'])
         df['id'] = np.array([tweet.id for tweet in tweets])
         df['len'] = np.array([len(tweet.text) for tweet in tweets])
         df['date'] = np.array([tweet.created_at for tweet in tweets])
@@ -109,28 +125,13 @@ if __name__ == "__main__":
 
     api = twitter_client.get_twitter_client_api()
 
-    tweets = api.home_timeline(count=200)
+    tweets = api.home_timeline(count=200, lang="en")
+    #api.user_timeline(screen_name="NDTV", count=200)
+    
+    # print(dir(tweets[0]))
 
     df = tweet_analyzer.tweets_to_data_frame(tweets)
+    df['sentiment'] = np.array([tweet_analyzer.analyze_sentiment(tweet) for tweet in df['tweets']])
 
-    # #get average length over all tweets
-    # print(np.mean(df['len'])," characters")
+    print(df.head(10))
 
-    # #get most liked tweet
-    # print(np.max(df['likes'])," likes")
-
-    # #get most retweeted tweet
-    # print(np.max(df['retweets'])," retweeted")
-
-    #TimeSeries
-    # time_likes = pd.Series(data=df['likes'].values, index = df['date'])
-    # time_likes.plot(figsize = (16,4), color='r')
-    # plt.show()
-
-    time_likes = pd.Series(data=df['likes'].values, index = df['date'])
-    time_likes.plot(figsize = (10,4), label="likes", legend=True)
-
-    time_likes = pd.Series(data=df['retweets'].values, index = df['date'])
-    time_likes.plot(figsize = (10,4), label="retweets", legend=True)
-
-    plt.show()
