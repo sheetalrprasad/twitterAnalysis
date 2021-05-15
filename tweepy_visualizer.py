@@ -7,6 +7,7 @@ from tweepy import Stream
 import twitter_credentials
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 
 
  ### TWITTER CLINET ###
@@ -112,13 +113,24 @@ if __name__ == "__main__":
 
     df = tweet_analyzer.tweets_to_data_frame(tweets)
 
-    #get average length over all tweets
-    print(np.mean(df['len'])," characters")
+    # #get average length over all tweets
+    # print(np.mean(df['len'])," characters")
 
-    #get most liked tweet
-    print(np.max(df['likes'])," likes")
+    # #get most liked tweet
+    # print(np.max(df['likes'])," likes")
 
-    #get most retweeted tweet
-    print(np.max(df['retweets'])," retweeted")
+    # #get most retweeted tweet
+    # print(np.max(df['retweets'])," retweeted")
 
-    #1:09
+    #TimeSeries
+    # time_likes = pd.Series(data=df['likes'].values, index = df['date'])
+    # time_likes.plot(figsize = (16,4), color='r')
+    # plt.show()
+
+    time_likes = pd.Series(data=df['likes'].values, index = df['date'])
+    time_likes.plot(figsize = (10,4), label="likes", legend=True)
+
+    time_likes = pd.Series(data=df['retweets'].values, index = df['date'])
+    time_likes.plot(figsize = (10,4), label="retweets", legend=True)
+
+    plt.show()
